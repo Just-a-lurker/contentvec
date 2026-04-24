@@ -137,3 +137,13 @@ experimental/*
 
 # Weights and Biases logs
 wandb/
+
+# 1. Ignore the entire folder
+/fairseq/*
+
+# 2. Allow the specific sub-folders/files
+!/fairseq/changed_files/
+!/fairseq/get_the_rest_from_fairseq_repo
+
+# 3. Ensure everything inside 'changed_files' is tracked
+!/fairseq/changed_files/**
