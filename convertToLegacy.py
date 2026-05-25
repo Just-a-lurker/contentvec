@@ -3,18 +3,18 @@ import os
 
 
 def sync_and_convert_to_legacy(custom_path, template_path, output_path):
-    print(f"--- 1. Đang tải model của bạn: {custom_path} ---")
+    print(f"1. Đang tải model của bạn: {custom_path}")
     custom_ckpt = torch.load(custom_path, map_location="cpu")
 
-    print(f"--- 2. Đang tải model mẫu để lấy khuôn: {template_path} ---")
+    print(f"2. Đang tải model mẫu để lấy khuôn: {template_path}")
     template_ckpt = torch.load(template_path, map_location="cpu")
 
     custom_model = custom_ckpt['model']
     template_keys = set(template_ckpt['model'].keys())
     custom_keys = set(custom_model.keys())
 
-    # --- BƯỚC 1: ĐỒNG BỘ TRỌNG SỐ (WEIGHTS) ---
-    print("\n--- 3. Bắt đầu đồng bộ cấu trúc trọng số ---")
+    # BƯỚC 1: ĐỒNG BỘ TRỌNG SỐ (WEIGHTS)
+    print("\n3. Bắt đầu đồng bộ cấu trúc trọng số")
     extra_keys = custom_keys - template_keys
     for k in extra_keys:
         custom_model.pop(k)
@@ -26,11 +26,11 @@ def sync_and_convert_to_legacy(custom_path, template_path, output_path):
     else:
         print("Trọng số đã khớp 100% với mẫu.")
 
-        # --- BƯỚC 2: DỌN DẸP CẤU HÌNH (CONFIG) ---
+        #BƯỚC 2: DỌN DẸP CẤU HÌNH
         if 'cfg' in custom_ckpt:
-            print("\n--- 4. Đang dọn dẹp Config để tránh lỗi OmegaConf ---")
+            print("\n4. Đang dọn dẹp Config để tránh lỗi OmegaConf")
 
-            # 4.1. Đổi tên Task và Model về Hubert truyền thống
+            # 4.1. Đổi tên Task và Model về Hubert truyền thống (Không bắt buộc)
             custom_ckpt['cfg']['model']['_name'] = 'hubert'
             custom_ckpt['cfg']['task']['_name'] = 'hubert_pretraining'
             custom_ckpt['cfg']['criterion']['_name'] = 'hubert'
@@ -54,7 +54,7 @@ def sync_and_convert_to_legacy(custom_path, template_path, output_path):
             task_cfg['sample_rate'] = 16000
             task_cfg['random_crop'] = True
             task_cfg['single_target'] = False
-            task_cfg['label_rate'] = 50  # <--- Sửa lỗi label_rate -1.0 gây hỏng Naive model
+            task_cfg['label_rate'] = 50  # Sửa lỗi label_rate -1.0 gây hỏng Naive model
 
             # 4.3. XỬ LÝ PHẦN MODEL (Xóa các biến ContentVec gây lỗi OmegaConf)
             model_cfg = custom_ckpt['cfg']['model']
@@ -72,14 +72,14 @@ def sync_and_convert_to_legacy(custom_path, template_path, output_path):
             model_cfg['encoder_layers'] = 12
             model_cfg['label_rate'] = 50  # Đồng bộ với task
 
-    # --- BƯỚC 3: ĐỒNG BỘ LỊCH SỬ OPTIMIZER ---
+    #BƯỚC 3: ĐỒNG BỘ LỊCH SỬ OPTIMIZER
     if 'optimizer_history' in custom_ckpt:
-        print("\n--- 5. Đang đồng bộ hóa Optimizer History ---")
+        print("\n5. Đang đồng bộ hóa Optimizer History")
         for history in custom_ckpt['optimizer_history']:
             history['criterion_name'] = 'HubertCriterion'
 
-    # --- LƯU FILE ---
-    print(f"\n--- 6. Đang lưu model cuối cùng: {output_path} ---")
+    #LƯU FILE
+    print(f"\n6. Đang lưu model cuối cùng: {output_path}")
     torch.save(custom_ckpt, output_path)
     print("Xong! Model đã sạch và sẵn sàng cho Diffusion-SVC.")
 

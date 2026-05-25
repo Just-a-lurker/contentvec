@@ -1,0 +1,29 @@
+(.venv) PS D:\Tools\Projects\contentvec\fairseq> python examples/wav2vec/wav2vec_manifest.py "D:\Tools\Projects\contentvec\dataset/wavs" --dest "D:\Tools\Projects\contentvec\dataset/manifest" --ext wav --valid-percent 0.1
+
+(.venv) PS D:\Tools\Projects\contentvec\fairseq> python examples/hubert/simple_kmeans/dump_hubert_feature.py `  
+>>     "D:/Tools/Projects/contentvec/dataset/manifest" train `                       
+>>     "D:/Tools/Projects/contentvec/dataset/checkpoints/checkpoint_last.pt" 12 1 0 ` (12 Hubert/Contentvec layers, 1 sharrd, 0 rank)
+>>     "D:/Tools/Projects/contentvec/dataset/features"
+
+(.venv) PS D:\Tools\Projects\contentvec\fairseq> python examples/hubert/simple_kmeans/dump_hubert_feature.py `                                                                                                               
+>>     "D:/Tools/Projects/contentvec/dataset/manifest" valid `  
+>>     "D:/Tools/Projects/contentvec/dataset/checkpoints/checkpoint_last.pt" 12 1 0 `
+>>     "D:/Tools/Projects/contentvec/dataset/features"
+
+python examples/hubert/simple_kmeans/learn_kmeans.py `                                                                                                                      
+>>     "D:/Tools/Projects/contentvec/dataset/features" train 1 `
+>>     "D:/Tools/Projects/contentvec/dataset/km_model_500.km" 500 --percent 1  
+
+ python examples/hubert/simple_kmeans/dump_km_label.py `                                                                                                                     
+>>     "D:/Tools/Projects/contentvec/dataset/features" train `  
+>>     "D:/Tools/Projects/contentvec/dataset/km_model_500.km" 1 0 `    (1 shard 0 rank for multiple gpus)              
+>>     "D:/Tools/Projects/contentvec/dataset/manifest"
+
+python examples/hubert/simple_kmeans/dump_km_label.py `
+>>     "D:/Tools/Projects/contentvec/dataset/features" valid `
+>>     "D:/Tools/Projects/contentvec/dataset/km_model_500.km" 1 0 ` 
+>>     "D:/Tools/Projects/contentvec/dataset/manifest"
+
+Run create_contentvec_dict.py and createDict.py
+
+train
