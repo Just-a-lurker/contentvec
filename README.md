@@ -1,5 +1,6 @@
 # ContentVec: An Improved Self-Supervised Speech Representation by Disentangling Speakers 
-# This is a fork for my Vietnamese voice conversion project. The trarining is done on Windows, detailed commands used can be found in AllUsedCommand.txt
+# This is a fork for my Vietnamese voice conversion project. All modifications can be found in commit history.
+# The trarining is done on Windows, detailed commands used can be found in AllUsedCommand.txt
 
 This repository provides the official PyTorch implementation of [ContentVec](https://arxiv.org/abs/2204.09224).
 
